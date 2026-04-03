@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       phone_number: { type: DataTypes.STRING, allowNull: false },
       image: { type: DataTypes.STRING },
       role: { type: DataTypes.ENUM("user", "admin"), allowNull: false },
+      token: { type: DataTypes.TEXT, allowNull: true },
       created_at: { type: DataTypes.DATE, allowNull: false },
     },
     {
