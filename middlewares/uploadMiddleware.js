@@ -1,21 +1,26 @@
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    let dest = "public/uploads/others/"; // Varsayılan klasör
+
     if (file.fieldname === "profile_image") {
-      cb(null, "public/uploads/profiles/");
-    } else if (
-      file.fieldname === "product_image"
-    ) {
-      cb(null, "public/uploads/products/");
-    } else {
-      cb(null, "public/uploads/others/");
+      dest = "public/uploads/profiles/";
+    } else if (file.fieldname === "product_image") {
+      dest = "public/uploads/products/";
     }
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
+    }
+
+    cb(null, dest);
   },
+
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-  cb(
+    cb(
       null,
       file.fieldname +
         "-" +
