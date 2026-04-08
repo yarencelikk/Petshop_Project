@@ -271,7 +271,7 @@ exports.getPaymentMethods = async (req, res, next) => {
       { id: "cash_on_delivery", name: "Kapıda Ödeme" },
     ];
 
-    res.json({
+    return res.json({
       success: 1,
       data: paymentMethods,
       message: "Ödeme yöntemleri listelendi.",

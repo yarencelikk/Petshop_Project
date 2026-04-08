@@ -9,13 +9,13 @@ exports.getAllBrand = async (req, res, next) => {
       req.query.per_page,
     );
     const { count, rows: brands } = await Brand.findAndCountAll({
-      include: [{ model: Product,as: 'products' , attributes: ["id", "name"] }],
+      include: [{ model: Product, as: "products", attributes: ["id", "name"] }],
       limit,
       offset,
       order: [["name", "ASC"]],
     });
     if (!brands || brands.length === 0) {
-     return res
+      return res
         .status(404)
         .json({ success: 0, data: null, message: "marka bulunamadı." });
     }
@@ -41,8 +41,8 @@ exports.createBrand = async (req, res, next) => {
         .status(400)
         .json({ success: 0, data: null, message: "Marka adı boş olamaz." });
     }
-    const newBrand = await Brand.create({ name: name.trim()});
-     return res
+    const newBrand = await Brand.create({ name: name.trim() });
+    return res
       .status(201)
       .json({ success: 1, data: newBrand, message: "marka eklendi." });
   } catch (err) {
@@ -57,7 +57,7 @@ exports.updateBrand = async (req, res, next) => {
     const { name } = req.body;
     const brand = await Brand.findByPk(id);
     if (!brand) {
-     return res.status(404).json({
+      return res.status(404).json({
         success: 0,
         data: null,
         message: "güncellenecek marka bulunmadı.",

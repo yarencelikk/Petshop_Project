@@ -134,7 +134,7 @@ exports.validateCoupon = async (req, res, next) => {
       });
     }
 
-    res.json({
+    return res.json({
       success: 1,
       data: {
         id: coupon.id,
