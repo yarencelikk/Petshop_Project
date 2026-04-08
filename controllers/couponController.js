@@ -28,7 +28,7 @@ exports.getAvailableCoupons = async (req, res, next) => {
         .json({ success: 0, data: null, message: "Aktif kupon bulunamadı." });
     }
 
-    res.json({
+    return res.json({
       success: 1,
       data: {
         coupons,
@@ -59,7 +59,11 @@ exports.createCoupon = async (req, res, next) => {
     if (existing) {
       return res
         .status(400)
-        .json({ success: 0, data: null, message: "Bu kupon kodu zaten mevcut." });
+        .json({
+          success: 0,
+          data: null,
+          message: "Bu kupon kodu zaten mevcut.",
+        });
     }
 
     const newCoupon = await Coupon.create({
@@ -74,13 +78,11 @@ exports.createCoupon = async (req, res, next) => {
       used_count: 0,
     });
 
-    res
-      .status(201)
-      .json({
-        success: 1,
-        data: newCoupon,
-        message: "Kupon başarıyla oluşturuldu.",
-      });
+    return res.status(201).json({
+      success: 1,
+      data: newCoupon,
+      message: "Kupon başarıyla oluşturuldu.",
+    });
   } catch (err) {
     next(err);
   }
@@ -102,11 +104,15 @@ exports.validateCoupon = async (req, res, next) => {
         is_active: true,
         expiry_date: { [Op.gt]: new Date() },
       },
-    }); 
+    });
     if (!coupon) {
       return res
         .status(404)
-        .json({ success: 0, data: null, message: "Geçersiz veya süresi dolmuş kupon." });
+        .json({
+          success: 0,
+          data: null,
+          message: "Geçersiz veya süresi dolmuş kupon.",
+        });
     }
     if (
       coupon.usage_limit !== null &&
@@ -114,7 +120,11 @@ exports.validateCoupon = async (req, res, next) => {
     ) {
       return res
         .status(400)
-        .json({ success: 0, data: null, message: "Bu kuponun kullanım limiti dolmuştur." });
+        .json({
+          success: 0,
+          data: null,
+          message: "Bu kuponun kullanım limiti dolmuştur.",
+        });
     }
     if (cartTotal < parseFloat(coupon.min_purchase_amount)) {
       return res.status(400).json({

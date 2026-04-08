@@ -15,11 +15,11 @@ exports.getAllBrand = async (req, res, next) => {
       order: [["name", "ASC"]],
     });
     if (!brands || brands.length === 0) {
-      res
+     return res
         .status(404)
         .json({ success: 0, data: null, message: "marka bulunamadı." });
     }
-    res.json({
+    return res.json({
       success: 1,
       data: {
         brands: brands,
@@ -42,7 +42,7 @@ exports.createBrand = async (req, res, next) => {
         .json({ success: 0, data: null, message: "Marka adı boş olamaz." });
     }
     const newBrand = await Brand.create({ name: name.trim()});
-    res
+     return res
       .status(201)
       .json({ success: 1, data: newBrand, message: "marka eklendi." });
   } catch (err) {
@@ -57,7 +57,7 @@ exports.updateBrand = async (req, res, next) => {
     const { name } = req.body;
     const brand = await Brand.findByPk(id);
     if (!brand) {
-      res.status(404).json({
+     return res.status(404).json({
         success: 0,
         data: null,
         message: "güncellenecek marka bulunmadı.",
@@ -71,7 +71,7 @@ exports.updateBrand = async (req, res, next) => {
       });
     }
     await brand.update({ name: name.trim() });
-    res.json({
+    return res.json({
       success: 1,
       data: brand,
       message: "Marka başarıyla güncellendi.",
@@ -94,7 +94,7 @@ exports.deleteBrand = async (req, res, next) => {
       });
     }
     await brand.destroy();
-    res.json({
+    return res.json({
       success: 1,
       data: null,
       message: "marka başarıyla silindi.",

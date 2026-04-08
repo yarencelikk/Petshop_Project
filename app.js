@@ -28,11 +28,11 @@ async function startServer() {
   try {
     await sequelize.authenticate();
     // Test amaçlı loglar
-    logger.info("Bu bir bilgi logudur (Combined logda görünmeli)");
-    logger.warn("Bu bir uyarı logudur");
-    logger.error(
-      "Bu bir hata logudur (Hem error hem combined logda görünmeli)",
-    );
+    // logger.info("Bu bir bilgi logudur (Combined logda görünmeli)");
+    // logger.warn("Bu bir uyarı logudur");
+    // logger.error(
+    //   "Bu bir hata logudur (Hem error hem combined logda görünmeli)",
+    // );
     console.log("Veritabanı bağlantısı başarılı.");
     app.listen(PORT, () => {
       console.log(`Sunucu http://localhost:${PORT} adresinde çalışıyor.`);

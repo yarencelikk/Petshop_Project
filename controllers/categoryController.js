@@ -1,4 +1,4 @@
-const { Category ,Product} = require("../models");
+const { Category, Product } = require("../models");
 const { getPaginationParams, getPagingData } = require("../helpers/pagination");
 
 //Read
@@ -9,7 +9,7 @@ exports.getAllCategory = async (req, res, next) => {
       req.query.per_page,
     );
     const { count, rows: categories } = await Category.findAndCountAll({
-      include: [{ model: Product, as: 'products', attributes: ["id", "name"] }],
+      include: [{ model: Product, as: "products", attributes: ["id", "name"] }],
       limit,
       offset,
       order: [["name", "ASC"]],
@@ -19,13 +19,13 @@ exports.getAllCategory = async (req, res, next) => {
         .status(404)
         .json({ success: 0, data: null, message: "Kategori bulunamadı." });
     }
-    res.json({
+    return res.json({
       success: 1,
       data: {
         categories,
         pagination: getPagingData(count, req.query.page, limit),
       },
-      message:"Kategoriler listelendi."
+      message: "Kategoriler listelendi.",
     });
   } catch (err) {
     next(err);
@@ -37,7 +37,7 @@ exports.createCategory = async (req, res, next) => {
   try {
     const { name } = req.body;
     const newCategory = await Category.create({ name });
-    res
+    return res
       .status(201)
       .json({ succes: 1, data: newCategory, message: "Kategori oluşturuldu." });
   } catch (err) {
@@ -59,7 +59,7 @@ exports.updateCategory = async (req, res, next) => {
       });
     }
     const updatedCategory = await category.update({ name: name.trim() });
-    res.json({
+    return res.json({
       success: 1,
       data: updatedCategory,
       message: "Kategori güncellendi.",
@@ -82,7 +82,7 @@ exports.deleteCategory = async (req, res, next) => {
   }
   await category.destroy();
 
-  res.json({
+  return res.json({
     success: 1,
     data: null,
     message: "kategori başarıyla silindi.",

@@ -17,7 +17,7 @@ exports.getAllPetType = async (req, res, next) => {
         .status(404)
         .json({ success: 0, data: null, message: "ürün bulunamadı." });
     }
-    res.json({
+    return res.json({
       success: 1,
       data: {
         petType,
@@ -50,7 +50,7 @@ exports.createPetType = async (req, res, next) => {
         });
     }
     const newPetType = await PetType.create({ name: name.trim() });
-    res.status(201).json({
+    return res.status(201).json({
       success: 1,
       data: newPetType,
       message: "Tür başarıyla oluşturuldu.",
@@ -78,7 +78,7 @@ exports.updatePetType = async (req, res, next) => {
     }
     petType.name = name;
     await petType.save();
-    res.json({
+    return res.json({
       success: 1,
       data: petType,
       message: "Tür başarıyla güncellendi.",
@@ -109,7 +109,7 @@ exports.deletePetType = async (req, res, next) => {
         });
     }
     await petType.destroy();
-    res.json({ success: 1, data: null, message: "Tür başarıyla silindi." });
+    return res.json({ success: 1, data: null, message: "Tür başarıyla silindi." });
   } catch (err) {
     next(err);
   }

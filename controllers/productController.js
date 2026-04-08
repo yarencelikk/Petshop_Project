@@ -1,7 +1,14 @@
 const fs = require("fs");
 const path = require("path");
-const { Product,ProductVariant,Brand, OrderItem } = require("../models");
+const {
+  Product,
+  ProductVariant,
+  Brand,
+  OrderItem,
+  sequelize,
+} = require("../models");
 const { getPaginationParams, getPagingData } = require("../helpers/pagination");
+const { Op } = require("sequelize");
 //Read
 exports.getAllProducts = async (req, res, next) => {
   try {
@@ -30,7 +37,7 @@ exports.getAllProducts = async (req, res, next) => {
         .status(404)
         .json({ success: 0, data: null, message: "ürün bulunamadı." });
     }
-    res.json({
+    return res.json({
       success: 1,
       data: {
         products,
@@ -45,61 +52,66 @@ exports.getAllProducts = async (req, res, next) => {
 
 //create
 exports.createProduct = async (req, res, next) => {
+  const t = await sequelize.transaction();
+
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({
-        success: 0,
-        data: null,
-        message: "Ürün ekleme yetkiniz yok.",
-      });
-    }
-    const {
-      category_id,
-      brand_id,
-      pet_type_id,
-      name,
-      description,
-    } = req.body;
+    const { category_id, brand_id, pet_type_id, name, description, variants } =
+      req.body;
+
     let imageUrl = null;
     if (req.file) {
       imageUrl = `/uploads/products/${req.file.filename}`;
     } else {
       return res.status(400).json({
         success: 0,
-        data: null,
         message: "Ürün resmi yüklemek zorunludur.",
       });
     }
-    const newProduct = await Product.create({
-      category_id,
-      brand_id,
-      pet_type_id,
-      name,
-      description,
-      image: imageUrl,
+    const newProduct = await Product.create(
+      {
+        category_id,
+        brand_id,
+        pet_type_id,
+        name,
+        description,
+        image: imageUrl,
+      },
+      { transaction: t },
+    );
+    if (variants && variants.length > 0) {
+      const variantsData = JSON.parse(variants).map((v) => ({
+        ...v,
+        product_id: newProduct.id,
+      }));
+
+      await ProductVariant.bulkCreate(variantsData, { transaction: t });
+    } else {
+      throw new Error("En az bir ürün seçeneği (varyant) eklemelisiniz.");
+    }
+    await t.commit();
+
+    const completedProduct = await Product.findByPk(newProduct.id, {
+      include: [{ model: ProductVariant, as: "variants" }],
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: 1,
-      data: newProduct,
-      message: "Ürün başarıyla eklendi.",
+      data: completedProduct,
+      message: "Ürün ve seçenekleri başarıyla oluşturuldu.",
     });
   } catch (err) {
+    if (t) await t.rollback();
     next(err);
   }
 };
 
 //update
 exports.updateProduct = async (req, res, next) => {
+  const t = await sequelize.transaction();
   try {
     const { id } = req.params;
-    const {
-      category_id,
-      brand_id,
-      pet_type_id,
-      name,
-      description,
-    } = req.body;
+    const { category_id, brand_id, pet_type_id, name, description, variants } =
+      req.body;
     const product = await Product.findByPk(id);
     if (!product) {
       return res.status(404).json({
@@ -108,83 +120,119 @@ exports.updateProduct = async (req, res, next) => {
         message: "Güncellenecek ürün bulunamadı.",
       });
     }
-    if (req.user.role !== "admin") {
-      return res.status(403).json({
-        success: 0,
-        data: null,
-        message: "Bu ürünü güncelleme yetkiniz yok.",
-      });
-    }
-    let finalImageUrl = product.image;
-    if (product.image) {
-      const oldImagePath = path.join(__dirname, "..", "public", product.image);
 
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
+    let finalImageUrl = product.image;
+    if (req.file) {
+      if (product.image) {
+        const oldImagePath = path.join(
+          __dirname,
+          "..",
+          "public",
+          product.image,
+        );
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
       }
+      finalImageUrl = `/uploads/products/${req.file.filename}`;
     }
-    finalImageUrl = `/uploads/products/${req.file.filename}`;
-    await product.update({
-      category_id,
-      brand_id,
-      pet_type_id,
-      name,
-      description,
-      image: finalImageUrl,
+    await product.update(
+      {
+        category_id,
+        brand_id,
+        pet_type_id,
+        name,
+        description,
+        image: finalImageUrl,
+      },
+      { transaction: t },
+    );
+
+    if (variants) {
+      await ProductVariant.destroy({
+        where: { product_id: id },
+        transaction: t,
+      });
+      const parsedVariants =
+        typeof variants === "string" ? JSON.parse(variants) : variants;
+
+      const variantsData = parsedVariants.map((v) => ({
+        ...v,
+        product_id: id,
+      }));
+
+      await ProductVariant.bulkCreate(variantsData, { transaction: t });
+    }
+
+    await t.commit();
+
+    const updatedProduct = await Product.findByPk(id, {
+      include: [{ model: ProductVariant, as: "variants" }],
     });
-    res.json({
+    return res.json({
       success: 1,
-      data: product,
+      data: updatedProduct,
       message: "Ürün başarıyla güncellendi.",
     });
   } catch (error) {
+    if (t) await t.rollback();
     next(error);
   }
 };
 
-//delete
 exports.deleteProduct = async (req, res, next) => {
+  const t = await sequelize.transaction();
   try {
     const { id } = req.params;
+
     if (req.user.role !== "admin") {
       return res
         .status(403)
-        .json({ success: 0, data: null, message: "Ürün silme yetkiniz yok." });
+        .json({ success: 0, message: "Ürün silme yetkiniz yok." });
     }
-    const product = await Product.findByPk(id);
+
+    const product = await Product.findByPk(id, {
+      include: [{ model: ProductVariant, as: "variants" }],
+    });
 
     if (!product) {
-      return res.status(404).json({
-        success: 0,
-        data: null,
-        message: "Silinecek ürün bulunamadı.",
-      });
+      return res
+        .status(404)
+        .json({ success: 0, message: "Silinecek ürün bulunamadı." });
     }
+
+    const variantIds = product.variants.map((v) => v.id);
+
     const isUsedInOrder = await OrderItem.findOne({
-      where: { product_id: id },
+      where: { variant_id: { [Op.in]: variantIds } },
+      transaction: t,
     });
+
     if (isUsedInOrder) {
       return res.status(400).json({
         success: 0,
-        data: null,
         message:
-          "Bu ürün geçmiş siparişlerde kayıtlı olduğu için silinemez. Lütfen stoğunu 0 yaparak satışa kapatın.",
+          "Bu ürünün seçenekleri geçmiş siparişlerde kayıtlı olduğu için silinemez. Stoğu 0 yaparak pasife alabilirsiniz.",
       });
     }
+
     if (product.image) {
       const imagePath = path.join(__dirname, "..", "public", product.image);
       if (fs.existsSync(imagePath)) {
         fs.unlinkSync(imagePath);
       }
     }
-    await product.destroy();
 
-    res.json({
+    await ProductVariant.destroy({ where: { product_id: id }, transaction: t });
+    await product.destroy({ transaction: t });
+
+    await t.commit();
+    return res.json({
       success: 1,
-      data: null,
-      message: "Ürün ve bağlı resim dosyası başarıyla silindi.",
+      message: "Ürün ve bağlı tüm seçenekler başarıyla silindi.",
     });
   } catch (error) {
+    if (t) await t.rollback();
     next(error);
   }
 };

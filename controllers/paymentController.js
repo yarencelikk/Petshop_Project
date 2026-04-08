@@ -8,7 +8,10 @@ const {
   User,
   Address,
   sequelize,
+  Coupon,
+  CartItem,
 } = require("../models");
+const { Op } = require("sequelize");
 const { createPayment } = require("../services/iyzicoService");
 const logger = require("../utils/logger");
 
@@ -16,109 +19,246 @@ exports.processPayment = async (req, res, next) => {
   const t = await sequelize.transaction();
 
   try {
-    const { order_id, paymentCard, paymentMethod,identityNumber } = req.body;
-    const order = await Order.findByPk(order_id, {
+    const { coupon_code, paymentCard, paymentMethod } = req.body;
+    const userId = req.user.id;
+
+    const cart = await ShoppingCart.findOne({
+      where: { user_id: userId },
       include: [
         {
-          model: OrderItem,
-          as: "orderItems",
+          model: CartItem,
+          as: "items",
           include: [
             {
               model: ProductVariant,
-              as: "variants",
+              as: "variant",
               include: [{ model: Product, as: "product" }],
             },
           ],
         },
-        { model: User, as: "user" },
-        { model: Address, as: "address" },
       ],
       transaction: t,
     });
-    if (!order) throw new Error("Sipariş bulunamadı.");
-    if (order.status !== "pending")
-      throw new Error("Bu siparişin ödemesi zaten yapılmış.");
-    const shippingAddress = {
-      contactName: `${order.user.name} ${order.user.surname}`,
-      city: order.address.city,
-      country: "Turkey",
-      address: `${order.address.district} - ${order.address.address_detail}`,
-    };
-    const basketItems = order.orderItems.map((item) => ({
-      id: item.variant_id.toString(),
-      name: item.variants?.product?.name || "Pet Ürünü",
-      price: (item.price_at_purchase * item.quantity).toString(),
-      category1: "Pet Shop",
-      itemType: "PHYSICAL",
-    }));
-    const billingAddress = shippingAddress;
-    const iyzicoData = {
-      locale: "tr",
-      conversationId: order_id.toString(),
-      price: order.total_price.toString(),
-      paidPrice: order.total_price.toString(),
-      currency: "TRY",
-      installment: "1",
-      basketId: order_id.toString(),
-      paymentChannel: "WEB",
-      paymentGroup: "PRODUCT",
-      paymentCard: paymentCard,
-      buyer: {
-        id: order.user.id.toString(),
-        name: order.user.name,
-        surname: order.user.surname,
-        email: order.user.email,
-        city: order.address.city,
-        country: "Turkey",
-        identityNumber: identityNumber || "11111111111",
-        registrationAddress: `${order.address.district} ${order.address.address_detail}`
+
+    if (!cart || !cart.items || cart.items.length === 0) {
+      throw new Error("Sepetiniz boş. Ödeme başlatılamaz.");
+    }
+
+    let total_price = 0;
+    const orderItemsData = [];
+
+    for (const cartItem of cart.items) {
+      const variant = cartItem.variant;
+      if (!variant) throw new Error("Ürün varyantı bulunamadı.");
+      if (variant.stock < cartItem.quantity)
+        throw new Error(`${variant.product.name} için stok yetersiz.`);
+
+      const itemPrice = parseFloat(variant.price);
+      const subTotal = itemPrice * cartItem.quantity;
+      total_price += subTotal;
+
+      orderItemsData.push({
+        variant_id: variant.id,
+        quantity: cartItem.quantity,
+        price_at_purchase: itemPrice,
+      });
+
+      variant.stock -= cartItem.quantity;
+      await variant.save({ transaction: t });
+    }
+    let discount = 0;
+    let appliedCoupon = null;
+    if (coupon_code) {
+      appliedCoupon = await Coupon.findOne({
+        where: {
+          code: coupon_code.toUpperCase(),
+          is_active: true,
+          expiry_date: { [Op.gt]: new Date() },
+        },
+        [Op.or]: [
+          { usage_limit: null },
+          { usage_limit: { [Op.gt]: sequelize.col("used_count") } },
+        ],
+        transaction: t,
+      });
+      if (!appliedCoupon) {
+        throw new Error(
+          "Girdiğiniz kupon kodu geçersiz, süresi dolmuş veya kullanım sınırına ulaşmış.",
+        );
+      }
+      if (
+        appliedCoupon &&
+        total_price >= parseFloat(appliedCoupon.min_purchase_amount)
+      ) {
+        discount =
+          appliedCoupon.discount_type === "fixed"
+            ? appliedCoupon.discount_amount
+            : (total_price * appliedCoupon.discount_amount) / 100;
+        await appliedCoupon.increment("used_count", { by: 1, transaction: t });
+      }
+    }
+
+    const final_price = Math.max(0, total_price - discount);
+    const basketItemsForIyzico = [];
+    if (paymentMethod === "credit_card") {
+      const discountRate = total_price > 0 ? final_price / total_price : 1;
+      let calculatedPaidPriceTotal = 0;
+
+    for (let index = 0; index < cart.items.length; index++) {
+        const cartItem = cart.items[index];
+        const variant = cartItem.variant;
+        let itemDiscountedPrice = parseFloat((parseFloat(variant.price) * discountRate).toFixed(2));
+        for (let i = 0; i < cartItem.quantity; i++) {
+          if (index === cart.items.length - 1 && i === cartItem.quantity - 1) {
+            const diff = parseFloat((final_price - calculatedPaidPriceTotal).toFixed(2));
+            itemDiscountedPrice = diff;
+          }
+          basketItemsForIyzico.push({
+            id: variant.id.toString(),
+            name: variant.product.name,
+            category1: "Pet Shop",
+            itemType: "PHYSICAL",
+            price: itemDiscountedPrice.toFixed(2),
+          });
+          calculatedPaidPriceTotal = parseFloat((calculatedPaidPriceTotal + itemDiscountedPrice).toFixed(2));
+        }
+      }
+    }
+    const address = await Address.findOne({
+      where: { user_id: userId, is_default: true },
+      transaction: t,
+    });
+
+    if (!address) {
+      throw new Error(
+        "Varsayılan teslimat adresiniz bulunamadı. Lütfen bir adres ekleyin veya varsayılan olarak işaretleyin.",
+      );
+    }
+
+    const user = await User.findByPk(userId, { transaction: t });
+
+    const newOrder = await Order.create(
+      {
+        user_id: userId,
+        address_id:address.id,
+        total_price: final_price,
+        status: "pending",
+        coupon_id: appliedCoupon ? appliedCoupon.id : null,
+        created_at: new Date(),
       },
-      shippingAddress: shippingAddress,
-      billingAddress: billingAddress,
-      basketItems: basketItems,
-    };
+      { transaction: t },
+    );
 
-    logger.info(`Iyzico ödeme isteği başlatıldı. Sipariş ID: ${order.id}`);
-    const result = await createPayment(iyzicoData);
+    await OrderItem.bulkCreate(
+      orderItemsData.map((item) => ({ ...item, order_id: newOrder.id })),
+      { transaction: t },
+    );
 
-    if (result.status === "success") {
+    //KREDİ KARTI
+    if (paymentMethod === "credit_card") {
+      const iyzicoData = {
+        locale: "tr",
+        conversationId: newOrder.id.toString(),
+        price: final_price.toFixed(2),
+        paidPrice: final_price.toFixed(2),
+        currency: "TRY",
+        installment: "1",
+        basketId: newOrder.id.toString(),
+        paymentChannel: "WEB",
+        paymentGroup: "PRODUCT",
+        paymentCard: paymentCard,
+        buyer: {
+          id: user.id.toString(),
+          name: user.name,
+          surname: user.surname,
+          email: user.email,
+          city: address.city,
+          country: "Turkey",
+          identityNumber: "identityNumber",
+          registrationAddress: `${address.district} ${address.address_detail}`,
+        },
+        shippingAddress: {
+          contactName: `${user.name} ${user.surname}`,
+          city: address.city,
+          country: "Turkey",
+          address: address.address_detail,
+        },
+        billingAddress: {
+          contactName: `${user.name} ${user.surname}`,
+          city: address.city,
+          country: "Turkey",
+          address: address.address_detail,
+        },
+        basketItems: basketItemsForIyzico,
+      };
+
+      const result = await createPayment(iyzicoData);
+
+      if (result.status === "success") {
+        await Payment.create(
+          {
+            order_id: newOrder.id,
+            payment_method: "credit_card",
+            status: "success",
+            transaction_id: result.paymentId,
+            amount: final_price,
+            raw_result: JSON.stringify(result),
+          },
+          { transaction: t },
+        );
+        newOrder.status = "preparing";
+        await newOrder.save({ transaction: t });
+      } else {
+        throw new Error(result.errorMessage || "Kart ödemesi reddedildi.");
+      }
+    } else if (paymentMethod === "cash_on_delivery") {
+      // KAPIDA ÖDEME
       await Payment.create(
         {
-          order_id: order.id,
-          payment_method: paymentMethod || "credit_card",
-          status: "success",
-          transaction_id: result.paymentId,
-          amount: order.total_price,
-          raw_result: JSON.stringify(result),
-          created_at: new Date(),
+          order_id: newOrder.id,
+          payment_method: "cash_on_delivery",
+          status: "pending",
+          transaction_id: `COD-${newOrder.id}-${Date.now()}`,
+          amount: final_price,
         },
         { transaction: t },
       );
-      order.status = "paid";
-      await order.save({ transaction: t });
-
-      await ShoppingCart.destroy({
-        where: { user_id: req.user.id },
-        transaction: t,
-      });
-
-      await t.commit();
-      logger.info(
-        `Ödeme başarıyla tamamlandı. TransactionID: ${result.paymentId}`,
+      newOrder.status = "preparing";
+      await newOrder.save({ transaction: t });
+    } else if (paymentMethod === "bank_transfer") {
+      // HAVALE / EFT
+      await Payment.create(
+        {
+          order_id: newOrder.id,
+          payment_method: "bank_transfer",
+          status: "pending",
+          transaction_id: `BANK-${newOrder.id}-${Date.now()}`,
+          amount: final_price,
+        },
+        { transaction: t },
       );
-      res.json({
-        success: 1,
-        data: { order, transactionId: result.paymentId },
-        message: "Ödeme başarıyla kaydedildi ve sipariş onaylandı.",
-      });
+
+      newOrder.status = "pending";
+      await newOrder.save({ transaction: t });
     } else {
-      logger.warn(`Ödeme başarısız: ${result.errorMessage}`);
-      throw new Error(
-        result.errorMessage || "Ödeme işlemi banka tarafından reddedildi.",
-      );
+      throw new Error("Geçersiz ödeme yöntemi seçildi.");
     }
+    await CartItem.destroy({ where: { cart_id: cart.id }, transaction: t });
+    await ShoppingCart.destroy({ where: { id: cart.id }, transaction: t });
+
+    await t.commit();
+
+    return res.status(201).json({
+      success: 1,
+      message:
+        paymentMethod === "bank_transfer"
+          ? "Sipariş alındı, havale onayınız bekleniyor."
+          : "Siparişiniz başarıyla oluşturuldu.",
+      data: { orderId: newOrder.id, method: paymentMethod },
+    });
   } catch (err) {
     if (t) await t.rollback();
+    logger.error(`Checkout Hatası: ${err.message}`);
     next(err);
   }
 };
@@ -164,7 +304,7 @@ exports.getPaymentHistory = async (req, res, next) => {
         message: "Henüz bir ödeme kaydınız bulunmuyor.",
       });
     }
-    res.json({
+    return res.json({
       success: 1,
       data: payments,
       message: "Ödeme geçmişi başarıyla listelendi.",

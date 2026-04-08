@@ -6,7 +6,7 @@ const userController = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const adminMiddleware = require("../middlewares/adminMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
-const { register, login } = require("../middlewares/userValidationMiddleware");
+const { register, login } = require("../validators/userValidation");
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);

@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "variant_id",
         as: "variant",
       });
+      Review.belongsTo(models.Order, { foreignKey: "order_id", as: "order" });
     }
   }
 
@@ -21,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       user_id: { type: DataTypes.INTEGER, allowNull: false },
       product_id: { type: DataTypes.INTEGER, allowNull: false },
       variant_id: { type: DataTypes.INTEGER, allowNull: true },
+      order_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       rating: {
         type: DataTypes.INTEGER,
         allowNull: false,

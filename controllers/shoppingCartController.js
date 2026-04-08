@@ -1,36 +1,46 @@
-const { ShoppingCart, ProductVariant, Product } = require("../models");
+const { ShoppingCart, ProductVariant, Product,CartItem,sequelize} = require("../models");
 
 // READ
 exports.getCart = async (req, res, next) => {
   try {
     const user_id = req.user.id;
-    const cartItems = await ShoppingCart.findAll({
+    const cart = await ShoppingCart.findAll({
       where: { user_id },
       include: [
         {
-          model: ProductVariant,
-          as: "variants",
-          attributes: ["id", "variant_name", "price", "stock"],
+          model: CartItem,
+          as: "items",
+          attributes: ["id", "quantity"],
           include: [
             {
-              model: Product,
-              as: "product",
-              attributes: ["id", "name", "image"],
+              model: ProductVariant,
+              as: "variant",
+              attributes: ["id", "variant_name", "price", "stock"],
+              include: [{ model: Product, as: "product", attributes: ["id", "name", "image"] }],
             },
           ],
         },
       ],
     });
 
-    const totalAmount = cartItems.reduce((acc, item) => {
+    if (!cart || !cart.items || cart.items.length === 0) {
+      return res.json({
+        success: 1,
+        data: { items: [], totalAmount: "0.00" },
+        message: "Sepetiniz boş.",
+      });
+    }
+
+    const totalAmount = cart.items.reduce((acc, item) => {
       const price = item.variant ? Number(item.variant.price) : 0;
       return acc + (price * item.quantity);
     }, 0);
 
-    res.json({
+    return res.json({
       success: 1,
       data: {
-        items: cartItems,
+        cart_id: cart.id,
+        items: cart.items,
         totalAmount: totalAmount.toFixed(2),
       },
       message: "Sepetiniz getirildi.",
@@ -42,75 +52,62 @@ exports.getCart = async (req, res, next) => {
 
 // CREATE-UPDATE
 exports.addToCart = async (req, res, next) => {
+  const t = await sequelize.transaction();
   try {
-    const { variant_id } = req.body;
-    const quantity = parseInt(req.body.quantity) || 1;
+    const { variant_id,quantity } = req.body;
     const user_id = req.user.id;
 
-    const variant = await ProductVariant.findByPk(variant_id);
-    if (!variant) {
-      return res.status(404).json({ success: 0, data: null, message: "Ürün seçeneği bulunamadı." });
-    }
-
-    if (variant.stock < quantity) {
-      return res.status(400).json({
-        success: 0,
-        data: null,
-        message: `Yetersiz stok. Mevcut: ${variant.stock} (${variant.variant_name})`,
-      });
-    }
-
-    const existingItem = await ShoppingCart.findOne({
-      where: { user_id, variant_id },
+  let [cart] = await ShoppingCart.findOrCreate({
+      where: { user_id },
+      defaults: { user_id },
+      transaction: t
     });
 
-    if (existingItem) {
-      const newQuantity = existingItem.quantity + quantity;
-
-      if (newQuantity > variant.stock) {
-        return res.status(400).json({
-          success: 0,
-          data: null,
-          message: "Toplam miktar stok sınırını aşıyor.",
-        });
-      }
-
-      existingItem.quantity = newQuantity;
-      await existingItem.save();
-      return res.json({
-        success: 1,
-        data: existingItem,
-        message: "Sepetteki ürün miktarı artırıldı.",
-      });
-    }
-
-    const newItem = await ShoppingCart.create({
-      user_id,
-      variant_id,
-      quantity,
+    let cartItem = await CartItem.findOne({
+      where: { cart_id: cart.id, variant_id },
+      transaction: t
     });
 
-    res.status(201).json({ success: 1, data: newItem, message: "Ürün sepete eklendi." });
+    if (cartItem) {
+      cartItem.quantity += parseInt(quantity);
+      await cartItem.save({ transaction: t });
+    } else {
+      await CartItem.create({
+        cart_id: cart.id,
+        variant_id,
+        quantity
+      }, { transaction: t });
+    }
+    await t.commit();
+    return res.status(201).json({ success: 1,data: cartItem ,message: "Ürün sepete eklendi." });
   } catch (err) {
+    await t.rollback();
     next(err);
   }
 };
-
 // DELETE
 exports.removeFromCart = async (req, res, next) => {
   try {
     const { variant_id } = req.params;
     const user_id = req.user.id;
 
-    const result = await ShoppingCart.destroy({
-      where: { user_id, variant_id },
+    const cart = await ShoppingCart.findOne({ where: { user_id } });
+    if (!cart) {
+      return res.status(404).json({ success: 0, message: "Sepet bulunamadı." });
+    }
+
+    const result = await CartItem.destroy({
+      where: { 
+        cart_id: cart.id, 
+        variant_id 
+      },
     });
 
     if (!result) {
       return res.status(404).json({ success: 0, data: null, message: "Ürün sepetinizde bulunamadı." });
     }
 
-    res.json({ success: 1, data: null, message: "Ürün sepetten kaldırıldı." });
+    return res.json({ success: 1, data: null, message: "Ürün sepetten kaldırıldı." });
   } catch (err) {
     next(err);
   }
@@ -119,8 +116,11 @@ exports.removeFromCart = async (req, res, next) => {
 exports.clearCart = async (req, res, next) => {
   try {
     const user_id = req.user.id;
-    await ShoppingCart.destroy({ where: { user_id } });
-    res.json({ success: 1, data: null, message: "Sepet temizlendi." });
+    const cart = await ShoppingCart.findOne({ where: { user_id } });
+    if (cart) {
+      await CartItem.destroy({ where: { cart_id: cart.id } });
+    }
+    return res.json({ success: 1, data: null, message: "Sepet temizlendi." });
   } catch (err) {
     next(err);
   }

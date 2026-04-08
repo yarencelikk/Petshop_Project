@@ -5,9 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     "ShoppingCart",
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      user_id: { type: DataTypes.INTEGER, allowNull: false },
-      variant_id: { type: DataTypes.INTEGER, allowNull: false },
-      quantity: { type: DataTypes.INTEGER, allowNull: false },
+      user_id: { type: DataTypes.INTEGER, allowNull: false, unique: true }, 
     },
     {
       tableName: "Shopping_Carts",
@@ -18,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
 
   ShoppingCart.associate = (models) => {
     ShoppingCart.belongsTo(models.User, { foreignKey: "user_id", as: "user" });
-    ShoppingCart.belongsTo(models.ProductVariant, { 
-    foreignKey: "variant_id", 
-    as: "variants" 
-  });
+    ShoppingCart.hasMany(models.CartItem, {
+      foreignKey: "cart_id",
+      as: "items",
+    });
   };
 
   return ShoppingCart;

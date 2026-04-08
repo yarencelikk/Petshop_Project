@@ -17,11 +17,11 @@ exports.getAddress = async (req, res, next) => {
       order: [["is_default", "DESC"]],
     });
     if (!addresses || addresses.length === 0) {
-      res
+      return res
         .status(404)
         .json({ success: 0, data: null, message: "adres bulunamadı." });
     }
-    res.json({
+    return res.json({
       success: 1,
       data: {
         addresses,
@@ -63,7 +63,7 @@ exports.createAddress = async (req, res, next) => {
       address_detail,
       is_default: is_default || false,
     });
-    res.json({ success: 1, data: newAddress, message: "adres oluşturuldu." });
+    return res.json({ success: 1, data: newAddress, message: "adres oluşturuldu." });
   } catch (err) {
     next(err);
   }
@@ -100,7 +100,7 @@ exports.updateAddress = async (req, res, next) => {
       address_detail: address_detail || address.address_detail,
       is_default: is_default !== undefined ? is_default : address.is_default,
     });
-    res.json({
+    return res.json({
       success: 1,
       data: address,
       message: "Adres başarıyla güncellendi.",
@@ -146,7 +146,7 @@ exports.deleteAddress = async (req, res, next) => {
       }
     }
 
-    res.json({
+    return res.json({
       success: 1,
       data: null,
       message:

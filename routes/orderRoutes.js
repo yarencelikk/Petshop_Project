@@ -6,7 +6,6 @@ const orderController = require("../controllers/orderController");
 
 router.get("/",authMiddleware,orderController.getOrders);
 router.get("/:id",authMiddleware,orderController.getOrderById);
-router.post("/",authMiddleware,orderController.createOrder);
 router.put("/status/:id",authMiddleware,adminMiddleware,orderController.updateOrderStatus);
 router.put("/cancel/:id",authMiddleware,adminMiddleware,orderController.cancelOrder);
 

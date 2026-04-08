@@ -6,7 +6,7 @@ const couponController = require("../controllers/couponController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const adminMiddleware = require("../middlewares/adminMiddleware");
 
-const couponValidation = require("../middlewares/couponValidationMiddleware");
+const couponValidation = require("../validators/couponValidation");
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);

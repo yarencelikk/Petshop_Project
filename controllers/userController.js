@@ -33,7 +33,7 @@ exports.register = async (req, res, next) => {
       created_at: new Date(),
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: 1,
       data: { id: newUser.id, email: newUser.email },
       message: "Kaydınız başarıyla oluşturuldu.",
@@ -69,7 +69,7 @@ exports.login = async (req, res, next) => {
       { expiresIn: "24h" },
     );
     await user.update({ token: token });
-    res.json({
+    return res.json({
       success: 1,
       token: token,
       data: {
@@ -105,7 +105,7 @@ exports.getAllUsers = async (req, res, next) => {
         .json({ success: 0, data: null, message: "Kullanıcı bulunamadı." });
     }
 
-    res.json({
+    return res.json({
       success: 1,
       data: {
         users: users,
@@ -130,7 +130,7 @@ exports.getUserById = async (req, res, next) => {
         .json({ success: 0, data: null, message: "Kullanıcı bulunamadı." });
     }
 
-    res.json({
+    return res.json({
       success: 1,
       data: user,
       message: "Kullanıcı bilgileri getirildi.",
@@ -154,7 +154,7 @@ exports.getMyProfile = async (req, res, next) => {
         .json({ success: 0, data: null, message: "Profil bulunamadı." });
     }
 
-    res.json({
+    return res.json({
       success: 1,
       data: profile,
       message: "Profil bilgileriniz başarıyla getirildi.",
@@ -192,10 +192,10 @@ exports.updateProfile = async (req, res, next) => {
     });
     const updatedUser = user.toJSON();
     delete updatedUser.password;
-    res.json({
+    return res.json({
       success: 1,
       data: updatedUser,
-      message: "Profil bilgileriniz ve resminiz başarıyla güncellendi.",
+      message: "Profil bilgileriniz başarıyla güncellendi.",
     });
   } catch (err) {
     next(err);
@@ -223,7 +223,7 @@ exports.changePassword = async (req, res, next) => {
     user.password = hashedPassword;
     await user.save();
 
-    res.json({
+    return res.json({
       success: 1,
       data: null,
       message:
@@ -253,7 +253,7 @@ exports.deleteUser = async (req, res, next) => {
       }
     }
     await user.destroy();
-    res.json({
+    return res.json({
       success: 1,
       data: null,
       message: "Kullanıcı ve bağlı tüm veriler başarıyla silindi.",

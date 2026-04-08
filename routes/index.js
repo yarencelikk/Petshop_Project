@@ -13,7 +13,7 @@ const categoryRoutes = require("./categoryRoutes");
 const petTypeRoutes = require("./petTypeRoutes");
 const paymentRoutes = require("./paymentRoutes");
 const reviewRoutes = require("./reviewsRoutes");
-const productVariantRoutes = require("./productVariantRoutes");
+
 
 router.use("/users", userRoutes);
 router.use("/products", productRoutes);
@@ -27,5 +27,5 @@ router.use("/categories", categoryRoutes);
 router.use("/pet-types", petTypeRoutes);
 router.use("/payments", paymentRoutes);
 router.use("/reviews", reviewRoutes);
-router.use("/variants", productVariantRoutes);
+
 module.exports = router;

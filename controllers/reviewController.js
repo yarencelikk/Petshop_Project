@@ -19,6 +19,7 @@ exports.getAllReviews = async (req, res, next) => {
           as: "variant",
           attributes: ["variant_name"],
         },
+        { model: Order, as: "order", attributes: ["id"] },
       ],
     });
     if (!reviews || reviews.length === 0) {
@@ -26,7 +27,7 @@ exports.getAllReviews = async (req, res, next) => {
         .status(404)
         .json({ success: 0, data: null, message: "Henüz yorum yapılmamış" });
     }
-    res.json({
+    return res.json({
       success: 1,
       data: {
         reviews: reviews,
@@ -43,35 +44,45 @@ exports.getAllReviews = async (req, res, next) => {
 exports.createReview = async (req, res, next) => {
   try {
     const user_id = req.user.id;
-    const { variant_id, rating, comment } = req.body;
-    const purchasedOrder = await Order.findOne({
-      where: {
-        user_id,
-        status: "delivered",
-      },
+    const { variant_id, rating, comment, order_id } = req.body;
+    const whereCondition = { variant_id };
+    const purchasedItem = await OrderItem.findOne({
+      where: whereCondition,
       include: [
         {
-          model: OrderItem,
-          as: "orderItems",
+          model: Order,
+          as: "order",
+          where: {
+            user_id,
+            status: "delivered",
+            ...(order_id && { id: order_id }),
+          },
           required: true,
-          where: { variant_id },
-          include: [{ model: ProductVariant, as: "variants" }],
+        },
+        {
+          model: ProductVariant,
+          as: "variants",
+          attributes: ["product_id"],
+          required: true,
         },
       ],
     });
 
-    if (!purchasedOrder) {
+    if (!purchasedItem) {
       return res.status(403).json({
         success: 0,
-        data: null,
-        message:
-          "Sadece satın aldığınız ve size ulaşan ürünlere değerlendirme yapabilirsiniz.",
+        message: "Bu siparişe ait teslim edilmiş bir ürün kaydı bulunamadı.",
       });
     }
 
-    const product_id = purchasedOrder.orderItems[0].variants.product_id;
+    const product_id = purchasedItem.variants.product_id;
+    const actualOrderId = purchasedItem.order_id;
     const existingReview = await Review.findOne({
-      where: { user_id, product_id },
+      where: {
+        user_id,
+        variant_id,
+        order_id: actualOrderId,
+      },
     });
     if (existingReview) {
       return res.status(400).json({
@@ -84,11 +95,12 @@ exports.createReview = async (req, res, next) => {
       user_id,
       product_id,
       variant_id,
+      order_id: actualOrderId,
       rating: rating || 5,
       comment: comment || "",
       created_at: new Date(),
     });
-    res.status(201).json({
+    return res.status(201).json({
       success: 1,
       data: newReview,
       message: "değerlendirme başarıyla oluşturuldu.",
@@ -101,13 +113,13 @@ exports.createReview = async (req, res, next) => {
 //update
 exports.updateReview = async (req, res, next) => {
   try {
+    const { id } = req.params;
     const user_id = req.user.id;
-    const { product_id } = req.params;
     const { rating, comment } = req.body;
     const review = await Review.findOne({
       where: {
+        id: id,
         user_id: user_id,
-        product_id: product_id,
       },
     });
 
@@ -123,7 +135,7 @@ exports.updateReview = async (req, res, next) => {
       comment: comment !== undefined ? comment : review.comment,
     });
 
-    res.json({
+    return res.json({
       success: 1,
       data: review,
       message: "Değerlendirmeniz başarıyla güncellendi.",
@@ -136,30 +148,30 @@ exports.updateReview = async (req, res, next) => {
 //delete
 exports.deleteReview = async (req, res, next) => {
   try {
-    const { product_id } = req.params;
+    const { id } = req.params;
     const current_user_id = req.user.id;
     const is_admin = req.user.role === "admin";
 
     const review = await Review.findOne({
       where: {
-        product_id: product_id,
+          id: id,
       },
     });
 
     if (!review) {
       return res
         .status(404)
-        .json({ success: 0, data: null, message: "Yorum bulunamadı." });
+        .json({ success: 0, data: null, message: "Değerlendirme bulunamadı." });
     }
     if (!is_admin && review.user_id !== current_user_id) {
       return res.status(403).json({
         success: 0,
         data: null,
-        message: "Bu yorumu silme yetkiniz yok.",
+        message: "Bu değerlendirmeyi silme yetkiniz yok.",
       });
     }
     await review.destroy();
-    res.json({
+    return res.json({
       success: 1,
       data: null,
       message: is_admin
