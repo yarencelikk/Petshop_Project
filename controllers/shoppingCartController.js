@@ -1,4 +1,10 @@
-const { ShoppingCart, ProductVariant, Product,CartItem,sequelize} = require("../models");
+const {
+  ShoppingCart,
+  ProductVariant,
+  Product,
+  CartItem,
+  sequelize,
+} = require("../models");
 
 // READ
 exports.getCart = async (req, res, next) => {
@@ -16,7 +22,13 @@ exports.getCart = async (req, res, next) => {
               model: ProductVariant,
               as: "variant",
               attributes: ["id", "variant_name", "price", "stock"],
-              include: [{ model: Product, as: "product", attributes: ["id", "name", "image"] }],
+              include: [
+                {
+                  model: Product,
+                  as: "product",
+                  attributes: ["id", "name", "image"],
+                },
+              ],
             },
           ],
         },
@@ -33,7 +45,7 @@ exports.getCart = async (req, res, next) => {
 
     const totalAmount = cart.items.reduce((acc, item) => {
       const price = item.variant ? Number(item.variant.price) : 0;
-      return acc + (price * item.quantity);
+      return acc + price * item.quantity;
     }, 0);
 
     return res.json({
@@ -54,32 +66,37 @@ exports.getCart = async (req, res, next) => {
 exports.addToCart = async (req, res, next) => {
   const t = await sequelize.transaction();
   try {
-    const { variant_id,quantity } = req.body;
+    const { variant_id, quantity } = req.body;
     const user_id = req.user.id;
 
-  let [cart] = await ShoppingCart.findOrCreate({
+    let [cart] = await ShoppingCart.findOrCreate({
       where: { user_id },
       defaults: { user_id },
-      transaction: t
+      transaction: t,
     });
 
     let cartItem = await CartItem.findOne({
       where: { cart_id: cart.id, variant_id },
-      transaction: t
+      transaction: t,
     });
 
     if (cartItem) {
       cartItem.quantity += parseInt(quantity);
       await cartItem.save({ transaction: t });
     } else {
-      await CartItem.create({
-        cart_id: cart.id,
-        variant_id,
-        quantity
-      }, { transaction: t });
+      cartItem=await CartItem.create(
+        {
+          cart_id: cart.id,
+          variant_id,
+          quantity,
+        },
+        { transaction: t },
+      );
     }
     await t.commit();
-    return res.status(201).json({ success: 1,data: cartItem ,message: "Ürün sepete eklendi." });
+    return res
+      .status(201)
+      .json({ success: 1, data: cartItem, message: "Ürün sepete eklendi." });
   } catch (err) {
     await t.rollback();
     next(err);
@@ -97,17 +114,27 @@ exports.removeFromCart = async (req, res, next) => {
     }
 
     const result = await CartItem.destroy({
-      where: { 
-        cart_id: cart.id, 
-        variant_id 
+      where: {
+        cart_id: cart.id,
+        variant_id,
       },
     });
 
     if (!result) {
-      return res.status(404).json({ success: 0, data: null, message: "Ürün sepetinizde bulunamadı." });
+      return res
+        .status(404)
+        .json({
+          success: 0,
+          data: null,
+          message: "Ürün sepetinizde bulunamadı.",
+        });
     }
 
-    return res.json({ success: 1, data: null, message: "Ürün sepetten kaldırıldı." });
+    return res.json({
+      success: 1,
+      data: null,
+      message: "Ürün sepetten kaldırıldı.",
+    });
   } catch (err) {
     next(err);
   }

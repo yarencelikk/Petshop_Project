@@ -9,6 +9,7 @@ const {
 } = require("../models");
 const { getPaginationParams, getPagingData } = require("../helpers/pagination");
 const { Op } = require("sequelize");
+
 //Read
 exports.getAllProducts = async (req, res, next) => {
   try {
@@ -107,10 +108,9 @@ exports.createProduct = async (req, res, next) => {
 
 //update
 exports.updateProduct = async (req, res, next) => {
-  const t = await sequelize.transaction();
   try {
     const { id } = req.params;
-    const { category_id, brand_id, pet_type_id, name, description, variants } =
+    const { category_id, brand_id, pet_type_id, name, description } =
       req.body;
     const product = await Product.findByPk(id);
     if (!product) {
@@ -136,7 +136,7 @@ exports.updateProduct = async (req, res, next) => {
       }
       finalImageUrl = `/uploads/products/${req.file.filename}`;
     }
-    await product.update(
+    const updatedProduct = await product.update(
       {
         category_id,
         brand_id,
@@ -145,38 +145,41 @@ exports.updateProduct = async (req, res, next) => {
         description,
         image: finalImageUrl,
       },
-      { transaction: t },
     );
 
-    if (variants) {
-      await ProductVariant.destroy({
-        where: { product_id: id },
-        transaction: t,
-      });
-      const parsedVariants =
-        typeof variants === "string" ? JSON.parse(variants) : variants;
-
-      const variantsData = parsedVariants.map((v) => ({
-        ...v,
-        product_id: id,
-      }));
-
-      await ProductVariant.bulkCreate(variantsData, { transaction: t });
-    }
-
-    await t.commit();
-
-    const updatedProduct = await Product.findByPk(id, {
-      include: [{ model: ProductVariant, as: "variants" }],
-    });
     return res.json({
       success: 1,
       data: updatedProduct,
       message: "Ürün başarıyla güncellendi.",
     });
   } catch (error) {
-    if (t) await t.rollback();
     next(error);
+  }
+};
+
+exports.updateVariant = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { variant_name, price, stock } = req.body;
+
+    const variant = await ProductVariant.findByPk(id);
+
+    if (!variant) {
+      return res.status(404).json({ success: 0, message: "Varyant bulunamadı." });
+    }
+    await variant.update({
+      variant_name: variant_name || variant.variant_name,
+      price: price || variant.price,
+      stock: stock !== undefined ? stock : variant.stock,
+    });
+
+    return res.json({
+      success: 1,
+      data: variant,
+      message: "Varyant bilgileri başarıyla güncellendi.",
+    });
+  } catch (err) {
+    next(err);
   }
 };
 
