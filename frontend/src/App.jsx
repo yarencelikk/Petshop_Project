@@ -1,5 +1,6 @@
 import {
   BrowserRouter as Router,
+  Navigate,
   Routes,
   Route,
   useLocation,
@@ -20,6 +21,27 @@ import Contact from "./pages/Contact";
 import Dashboard from "./Admin/Dashboard";
 import AdminLogin from "./Admin/AdminLogin";
 import { DeliveryInfo, HelpCenter, ReturnPolicy } from "./pages/SupportPages";
+
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user") || "null");
+  } catch {
+    return null;
+  }
+};
+
+const AdminProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem("token");
+  const user = getStoredUser();
+
+  if (!token || user?.role !== "admin") {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  return children;
+};
 
 // Header ve Footer'ın görünüp görünmeyeceğine karar veren yardımcı bileşen
 const AppContent = () => {
@@ -68,7 +90,14 @@ const AppContent = () => {
           <Route path="/adres" element={<Profile initialView="addresses" />} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<Dashboard />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminProtectedRoute>
+                <Dashboard />
+              </AdminProtectedRoute>
+            }
+          />
         </Routes>
       </main>
 
