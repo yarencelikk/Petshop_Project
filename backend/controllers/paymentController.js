@@ -20,6 +20,9 @@ exports.processPayment = async (req, res, next) => {
 
   try {
     const { coupon_code, paymentCard, paymentMethod } = req.body;
+    const isCardPayment = ["credit_card", "bank_transfer"].includes(
+      paymentMethod,
+    );
     const userId = req.user.id;
 
     const cart = await ShoppingCart.findOne({
@@ -100,7 +103,7 @@ exports.processPayment = async (req, res, next) => {
 
     const final_price = Math.max(0, total_price - discount);
     const basketItemsForIyzico = [];
-    if (paymentMethod === "credit_card") {
+    if (isCardPayment) {
       const discountRate = total_price > 0 ? final_price / total_price : 1;
       let calculatedPaidPriceTotal = 0;
 
@@ -160,8 +163,8 @@ exports.processPayment = async (req, res, next) => {
       { transaction: t },
     );
 
-    //KREDİ KARTI
-    if (paymentMethod === "credit_card") {
+    // KARTLI ODEME
+    if (isCardPayment) {
       const iyzicoData = {
         locale: "tr",
         conversationId: newOrder.id.toString(),
@@ -204,7 +207,7 @@ exports.processPayment = async (req, res, next) => {
         await Payment.create(
           {
             order_id: newOrder.id,
-            payment_method: "credit_card",
+            payment_method: paymentMethod,
             status: "success",
             transaction_id: result.paymentId,
             amount: final_price,
@@ -231,21 +234,6 @@ exports.processPayment = async (req, res, next) => {
       );
       newOrder.status = "preparing";
       await newOrder.save({ transaction: t });
-    } else if (paymentMethod === "bank_transfer") {
-      // HAVALE / EFT
-      await Payment.create(
-        {
-          order_id: newOrder.id,
-          payment_method: "bank_transfer",
-          status: "pending",
-          transaction_id: `BANK-${newOrder.id}-${Date.now()}`,
-          amount: final_price,
-        },
-        { transaction: t },
-      );
-
-      newOrder.status = "pending";
-      await newOrder.save({ transaction: t });
     } else {
       throw new Error("Geçersiz ödeme yöntemi seçildi.");
     }
@@ -256,10 +244,7 @@ exports.processPayment = async (req, res, next) => {
 
     return res.status(201).json({
       success: 1,
-      message:
-        paymentMethod === "bank_transfer"
-          ? "Sipariş alındı, havale onayınız bekleniyor."
-          : "Siparişiniz başarıyla oluşturuldu.",
+      message: "Siparişiniz başarıyla oluşturuldu.",
       data: { orderId: newOrder.id, method: paymentMethod },
     });
   } catch (err) {
@@ -273,7 +258,7 @@ exports.getPaymentMethods = async (req, res, next) => {
   try {
     const paymentMethods = [
       { id: "credit_card", name: "Kredi Kartı" },
-      { id: "bank_transfer", name: "Banka Havalesi" },
+      { id: "bank_transfer", name: "Banka Kartı" },
       { id: "cash_on_delivery", name: "Kapıda Ödeme" },
     ];
 

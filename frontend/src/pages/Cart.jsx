@@ -48,6 +48,9 @@ const Cart = () => {
       )
     : 0;
   const finalAmount = Math.max(0, cartTotal - discountAmount);
+  const isCardPayment = ["credit_card", "bank_transfer"].includes(
+    paymentMethod,
+  );
 
   const refreshCart = async () => {
     const response = await getCart();
@@ -79,7 +82,7 @@ const Cart = () => {
       } catch {
         setPaymentMethods([
           { id: "cash_on_delivery", name: "Kapıda Ödeme" },
-          { id: "bank_transfer", name: "Banka Havalesi" },
+          { id: "bank_transfer", name: "Banka Kartı" },
           { id: "credit_card", name: "Kredi Kartı" },
         ]);
       }
@@ -149,9 +152,15 @@ const Cart = () => {
       ...(appliedCoupon ? { coupon_code: appliedCoupon.code } : {}),
     };
 
-    if (paymentMethod === "credit_card") {
-      payload.paymentCard = paymentCard;
-      payload.identityNumber = identityNumber;
+    if (isCardPayment) {
+      payload.paymentCard = {
+        ...paymentCard,
+        cardNumber: paymentCard.cardNumber.replace(/\D/g, ""),
+        expireMonth: paymentCard.expireMonth.replace(/\D/g, ""),
+        expireYear: paymentCard.expireYear.replace(/\D/g, ""),
+        cvc: paymentCard.cvc.replace(/\D/g, ""),
+      };
+      payload.identityNumber = identityNumber.replace(/\D/g, "");
     }
 
     try {
@@ -164,7 +173,10 @@ const Cart = () => {
       await refreshCart();
       notifyCartUpdated();
     } catch (error) {
-      const validationMessage = error.response?.data?.errors?.[0]?.message;
+      const validationMessage = error.response?.data?.errors
+        ?.map((item) => item.message)
+        .filter(Boolean)
+        .join(" ");
       setPaymentMessage(
         validationMessage ||
           error.response?.data?.message ||
@@ -318,7 +330,7 @@ const Cart = () => {
                 ))}
               </div>
 
-              {paymentMethod === "credit_card" && (
+              {isCardPayment && (
                 <div className="card-payment-form">
                   <input
                     name="cardHolderName"
