@@ -111,6 +111,8 @@ exports.getAllProducts = async (req, res, next) => {
         ? [[{ model: ProductVariant, as: "variants" }, "price", "ASC"]]
         : sort === "price_desc"
           ? [[{ model: ProductVariant, as: "variants" }, "price", "DESC"]]
+          : sort === "newest"
+            ? [["id", "DESC"]]
           : sort === "name_desc"
             ? [["name", "DESC"]]
             : [["name", "ASC"]];

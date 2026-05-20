@@ -12,7 +12,7 @@ const FeaturedProducts = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await getProducts({ per_page: 8 });
+        const response = await getProducts({ per_page: 6, sort: "newest" });
         setProducts(response.data.data.products.map(normalizeProduct));
       } catch (error) {
         setErrorMessage(
