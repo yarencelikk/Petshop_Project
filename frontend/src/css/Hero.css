@@ -1,0 +1,229 @@
+/* Ana Kapsayıcı: Banner ve Yan Kartları yan yana dizer */
+.hero-section-wrapper {
+  margin: 32px auto;
+  padding: 0 24px;
+  max-width: 1280px;
+  display: grid;
+  /* Sol taraf 3 birim, Sağ taraf 1 birim yer kaplar */
+  grid-template-columns: 3fr 1fr; 
+  gap: 24px;
+  height: 600px;
+}
+
+/* --- SOL TARAF: ANA BANNER --- */
+.hero-main-banner {
+  position: relative;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  display:flex;
+  lign-items:center;
+}
+
+.hero-bg-img {
+  position: absolute;
+  top:0;
+  left:0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Görüntünün ezilmesini önler */
+  z-index: 1;
+  transition: transform 1s ease;
+}
+
+.hero-main-banner:hover .hero-bg-img {
+  transform: scale(1.05);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, 
+    rgba(0,0,0,0.85) 0%, 
+    rgba(0,0,0,0.3) 50%, 
+    transparent 100%);
+  z-index: 2;
+}
+
+.hero-main-content {
+  position: relative;
+  z-index: 5;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 60px;
+  color: white;
+  max-width: 600px;
+}
+
+/* --- İNDİRİM KATMANLARI (TIERS) --- */
+.tier {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tier-group {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.tier-condition {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.discount-tiers {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  border-left: 4px solid #4F6F52;
+  padding-left: 24px;
+  margin: 32px 0;
+}
+
+.tier-amount {
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.tier-label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+.tier-code {
+  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.tier-divider {
+  width: 1px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- SAĞ TARAF: YAN KARTLAR --- */
+.hero-side-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.side-card {
+  flex: 1; /* Kartların eşit boyda olması için */
+  border-radius: 24px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.side-card:hover {
+  transform: translateY(-5px);
+}
+
+.purple-theme {
+  background: linear-gradient(135deg, #739072 0%, #4F6F52 100%);
+  color: white;
+}
+
+.glass-theme {
+  background-color: #F8F5F0;
+  border: 1px solid rgba(79, 111, 82, 0.10);
+}
+
+.card-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 12px 0;
+  line-height: 1.2;
+}
+
+.dark-text { color: #2B2B2B; }
+.blue-text { color: #4F6F52; }
+
+.card-link {
+  background: none;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  font-size: 16px;
+}
+
+.blog-card-link {
+  margin-top: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #4F6F52;
+  border-radius: 999px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  box-shadow: 0 8px 18px rgba(43, 43, 43, 0.16);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.blog-card-link:hover {
+  background: #F3EFE7;
+  transform: translateY(-2px);
+}
+
+/* Sağ alt köşedeki pati ikonu */
+.paw-bg-icon {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  font-size: 80px !important;
+  opacity: 0.1;
+  transform: rotate(-15deg);
+}
+
+/* --- ORTAK STİLLER --- */
+.hero-badge, .hero-promo-badge {
+  background-color: #4F6F52;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.hero-title { font-size: 48px; font-weight: 900; margin-bottom: 15px; }
+.hero-cta-btn {
+  width: fit-content;
+  background-color: white;
+  color: #4F6F52;
+  padding: 18px 40px;
+  border-radius: 9999px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* --- MOBİL UYUMLULUK --- */
+@media (max-width: 992px) {
+  .hero-section-wrapper {
+    grid-template-columns: 1fr; /* Mobilde alt alta dizilir */
+    height: auto;
+  }
+  .hero-main-banner { height: 500px; }
+  .side-card { height: 200px; }
+}

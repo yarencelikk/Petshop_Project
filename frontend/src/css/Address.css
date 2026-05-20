@@ -1,0 +1,263 @@
+.address-section {
+  --primary: #4F6F52;
+  --primary-container: #739072;
+  --primary-light: rgba(79, 111, 82, 0.1);
+  --on-surface: #2B2B2B;
+  --on-surface-variant: #5F665D;
+  --outline: #7A8177;
+  --error: #8B2727;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.address-header .title { font-size: 1.5rem; font-weight: 700; color: var(--on-surface); }
+.address-header .subtitle { color: var(--on-surface-variant); font-size: 0.9rem; }
+
+.address-state {
+  margin: 0 0 1rem;
+  padding: 14px 16px;
+  background: white;
+  border: 1px solid #D9D1C3;
+  border-radius: 12px;
+  color: var(--on-surface-variant);
+  font-weight: 700;
+}
+
+.add-address-btn {
+  background-color: white;
+  color: var(--primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(79, 111, 82, 0.24);
+  transition: transform 0.2s;
+}
+
+.add-address-btn:hover { transform: scale(1.03); background: #F3EFE7; }
+
+.address-form {
+  background: white;
+  border: 1px solid #D9D1C3;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.address-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.address-form input,
+.address-form textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid #D9D1C3;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  outline: none;
+}
+
+.address-form textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.address-form input:focus,
+.address-form textarea:focus {
+  border-color: var(--primary);
+}
+
+.address-default-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0 2px;
+  color: var(--on-surface-variant);
+  font-weight: 700;
+}
+
+.address-default-field input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+}
+
+.address-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Grid Yapısı */
+.address-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Adres Kartı */
+.address-card {
+  background: white;
+  border: 1px solid #D9D1C3;
+  border-radius: 16px;
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.address-card.default {
+  border: 2px solid var(--primary);
+  box-shadow: 0 10px 30px rgba(79, 111, 82, 0.1);
+}
+
+.address-card:hover {
+  border-color: var(--primary);
+}
+
+/* Kart İçindeki Simgeler */
+.icon-wrapper {
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 0.75rem;
+  border-radius: 12px;
+  margin-right: 1rem;
+}
+
+.card-top { display: flex; align-items: start; margin-bottom: 1.5rem; }
+
+.card-title-group { display: flex; align-items: center; gap: 0.5rem; }
+.card-title-group h3 { font-size: 1.1rem; color: var(--on-surface); margin: 0; }
+
+.default-badge {
+  background: var(--primary);
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 100px;
+  text-transform: uppercase;
+}
+
+.owner-name { color: var(--outline); font-size: 0.85rem; font-weight: bold; margin-top: 4px; }
+
+/* Adres ve Telefon Satırları */
+.info-row { display: flex; gap: 0.75rem; margin-bottom: 0.75rem; align-items: flex-start; }
+.info-row span { color: var(--outline); font-size: 1.2rem; }
+.info-row p { color: var(--on-surface); font-size: 0.95rem; margin: 0; }
+
+/* Footer Linkleri */
+.card-footer {
+  border-top: 1px solid #D9D1C3;
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  min-height: 34px;
+}
+
+.address-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 32px;
+}
+
+.address-link-btn {
+  text-decoration: none !important;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: bold;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.address-link-btn.delete { color: var(--on-surface-variant); }
+.address-link-btn:hover { text-decoration: underline; }
+
+.make-default-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: none;
+  padding: 0 12px;
+  height: 32px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Boş Ekleme Kartı */
+.empty-add-card {
+  background: transparent;
+  border: 2px dashed #D9D1C3;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+@media (max-width: 640px) {
+  .address-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .address-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .address-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.empty-add-card:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.empty-icon { color: #7A8177; font-size: 3rem; }
+.empty-add-card h4 { color: var(--outline); margin: 0.5rem 0; }

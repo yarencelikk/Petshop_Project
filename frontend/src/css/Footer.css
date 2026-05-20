@@ -1,0 +1,136 @@
+.footer-container {
+  background-color: #F8F5F0; /* surface-container-low */
+  color: #5F665D; /* on-surface-variant */
+  padding-top: 48px;
+  margin-top: 48px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.footer-top-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px 48px 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 32px;
+}
+
+.footer-logo {
+  color: #4F6F52; /* primary */
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.footer-description {
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+
+.column-title {
+  color: #2B2B2B; /* on-surface */
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.footer-list {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-list li {
+  margin-bottom: 12px;
+}
+
+.footer-list a {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.footer-list a:hover {
+  color: #4F6F52;
+  padding-left: 8px;
+}
+
+.footer-list-state {
+  font-size: 14px;
+  opacity: 0.72;
+}
+
+.newsletter-text {
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.newsletter-input {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #9CA395;
+  background: white;
+  outline: none;
+}
+
+.newsletter-btn {
+  background-color: white;
+  color: #4F6F52;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+  text-decoration: none;
+}
+
+.newsletter-btn:hover {
+  background-color: #F3EFE7;
+  box-shadow: 0 4px 12px rgba(79, 111, 82, 0.24);
+}
+
+/* Footer Bottom */
+.footer-bottom-bar {
+  background-color: #EFE8DC; /* surface-container */
+  border-top: 1px solid rgba(116, 121, 149, 0.1);
+}
+
+.bottom-bar-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.copyright {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.payment-methods {
+  display: flex;
+  gap: 24px;
+  opacity: 0.6;
+}
+
+.payment-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}

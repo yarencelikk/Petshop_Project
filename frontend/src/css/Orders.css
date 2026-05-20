@@ -1,0 +1,266 @@
+/* Değişkenler */
+.orders-section {
+  --primary: #4F6F52;
+  --primary-container: #739072;
+  --on-surface: #2B2B2B;
+  --on-surface-variant: #5F665D;
+  --surface-low: #F3EFE7;
+  --surface-lowest: #ffffff;
+  --outline-variant: #D9D1C3;
+  --shadow: 0px 10px 30px rgba(79, 111, 82, 0.10);
+  flex: 1;
+  padding: 0;
+}
+
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.orders-header .title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+.order-select {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--outline-variant);
+  background: var(--surface-lowest);
+  color: var(--on-surface-variant);
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+.order-select:focus {
+  border-color: var(--primary);
+}
+
+.orders-state {
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border: 1px solid var(--outline-variant);
+  border-radius: 12px;
+  background: white;
+  color: var(--on-surface-variant);
+  font-weight: 700;
+}
+
+/* Kart Tasarımı */
+.orders-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.order-card {
+  background: var(--surface-lowest);
+  border-radius: 16px;
+  border: 1px solid var(--outline-variant);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Kart Üst Kısım */
+.order-card-header {
+  padding: 20px;
+  background: var(--surface-low);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.info-group-wrapper {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-item .label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.info-item .value {
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.primary-text {
+  color: var(--primary) !important;
+}
+
+.font-price {
+  font-size: 18px;
+}
+
+/* Durum Rozetleri */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.status-badge.cargo {
+  background: var(--primary-container);
+  color: white;
+}
+
+.status-badge.delivered {
+  background: var(--on-surface-variant);
+  color: white;
+}
+
+.status-badge.pending,
+.status-badge.preparing {
+  background: #EFE8DC;
+  color: var(--primary);
+}
+
+.status-badge.cancelled {
+  background: #f5d6d6;
+  color: #8b2727;
+}
+
+/* Kart Gövde Kısmı */
+.order-card-body {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.product-thumbnails {
+  display: flex;
+  gap: 12px;
+}
+
+.thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--outline-variant);
+}
+
+.extra-count {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  background: var(--surface-low);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+/* Butonlar */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  border: none;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+
+.btn-outline:hover {
+  background: rgba(79, 111, 82, 0.08);
+}
+
+.btn-primary {
+  background: white;
+  color: var(--primary);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-primary:hover {
+  background: #F3EFE7;
+  transform: scale(0.98);
+}
+
+.order-detail-panel {
+  border-top: 1px solid var(--outline-variant);
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.order-detail-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  color: var(--on-surface-variant);
+  font-size: 14px;
+}
+
+.order-detail-row span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.order-detail-row strong {
+  color: var(--primary);
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 640px) {
+  .order-card-body {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .action-buttons {
+    width: 100%;
+  }
+  
+  .btn {
+    flex: 1;
+  }
+
+  .order-detail-row {
+    grid-template-columns: 1fr;
+  }
+}

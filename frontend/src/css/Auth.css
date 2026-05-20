@@ -1,0 +1,265 @@
+:root {
+  --primary: #37563b;
+  --primary-container: #4f6f52;
+  --on-primary: #ffffff;
+  --surface: #faf9f5;
+  --surface-lowest: #ffffff;
+  --on-surface-variant: #424841;
+  --outline-variant: #c2c8bf;
+  --primary-fixed: #c8ecc8;
+}
+
+.auth-page-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #faf9f5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 24 24' fill='%234F6F52' fill-opacity='0.04'%3E%3Cpath d='M4.5 10c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5zm10 0c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5zm-5 4c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5zM12 19c-3.31 0-6-2.69-6-6 0-1.11.3-2.14.82-3.03.52-.89 1.18-1.57 2.05-2.05A5.923 5.923 0 0 1 12 7c1.11 0 2.14.3 3.03.82.89.52 1.57 1.18 2.05 2.05.52.89.82 1.92.82 3.03 0 3.31-2.69 6-6 6z'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 60px 60px;
+}
+
+.auth-container {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: transparent;
+  font-family: 'Hanken Grotesk', sans-serif;
+}
+
+.big-paw-decoration {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 280px;
+  height: 280px;
+  color: #4F6F52;
+  opacity: 0.07;
+  transform: rotate(-15deg);
+  pointer-events: none;
+  z-index: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Material Symbols Outlined';
+  font-size: 280px;
+  line-height: 1;
+}
+
+/* Sol Taraf Visual */
+.auth-visual {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-image: url("https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&q=80&w=1600");
+  background-size: cover;
+  background-position: center;
+  display: none;
+}
+
+.auth-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234F6F52' fill-opacity='0.08'%3E%3Cpath d='M12.67 11.2c.47-.53.73-1.22.73-1.96 0-1.66-1.34-3-3-3s-3 1.34-3 3c0 .74.26 1.43.73 1.96C7.88 12.41 7 13.76 7 15.3c0 2.21 1.79 4 4 4s4-1.79 4-4c0-1.54-.88-2.89-2.33-4.1zM7 7.75A1.75 1.75 0 0 1 8.75 6 1.75 1.75 0 0 1 10.5 7.75 1.75 1.75 0 0 1 8.75 9.5 1.75 1.75 0 0 1 7 7.75zM16.25 6A1.75 1.75 0 0 1 18 7.75 1.75 1.75 0 0 1 16.25 9.5 1.75 1.75 0 0 1 14.5 7.75 1.75 1.75 0 0 1 16.25 6zM12 4.75A1.75 1.75 0 0 1 13.75 3 1.75 1.75 0 0 1 15.5 4.75 1.75 1.75 0 0 1 13.75 6.5 1.75 1.75 0 0 1 12 4.75z'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 120px 120px;
+  opacity: 0.08;
+  z-index: 0;
+}
+
+@media (min-width: 1024px) {
+  .auth-visual { display: flex; }
+}
+
+.visual-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(55, 86, 59, 0.8), transparent);
+  display: flex;
+  align-items: flex-end;
+  padding: 60px;
+}
+
+.visual-content {
+  position: relative;
+  z-index: 1;
+  color: white;
+  max-width: 400px;
+}
+
+.visual-logo { font-size: 64px !important; color: var(--primary-fixed); margin-bottom: 20px; }
+.visual-content h1 { font-size: 48px; margin-bottom: 16px; }
+.visual-content p { font-size: 18px; opacity: 0.9; line-height: 1.6; }
+
+/* Sağ Taraf Form */
+.auth-form-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--surface-lowest);
+  padding: 40px;
+  border-radius: 24px;
+  border: 1px solid var(--outline-variant);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+}
+
+.auth-header { text-align: center; margin-bottom: 40px; }
+.auth-header h2 { font-size: 32px; color: var(--primary); margin-bottom: 8px; }
+.auth-header p { color: var(--on-surface-variant); }
+
+.auth-form { display: flex; flex-direction: column; gap: 20px; }
+
+.auth-message {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.auth-message.error {
+  color: #8a1f1f;
+  background: #fff0f0;
+  border: 1px solid #f0b8b8;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  margin-bottom: 6px;
+  display: block;
+  margin-left: 4px;
+}
+
+.input-wrapper { position: relative; display: flex; align-items: center; }
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  color: #737971;
+  font-size: 20px !important;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  background: #f4f4ef;
+  border: 1px solid var(--outline-variant);
+  border-radius: 12px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.input-wrapper input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(55, 86, 59, 0.1);
+}
+
+.visibility-toggle {
+  position: absolute;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #737971;
+  cursor: pointer;
+}
+
+.forgot-password { text-align: right; margin-top: -10px; }
+.forgot-password a { font-size: 12px; color: var(--primary); text-decoration: none; font-weight: 600; }
+
+.auth-btn {
+  background: var(--primary-container);
+  color: white;
+  padding: 16px;
+  border-radius: 99px;
+  border: none;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.auth-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.auth-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 32px 0;
+  color: #737971;
+  font-size: 12px;
+}
+
+.auth-divider::before, .auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--outline-variant);
+}
+
+.auth-divider span { padding: 0 16px; }
+
+.social-auth {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 16px;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--outline-variant);
+  border-radius: 99px;
+  background: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.social-btn:hover { background: #f4f4ef; }
+.social-btn img { width: 20px; }
+.fb-icon { color: #1877F2; }
+
+.terms-checkbox { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; }
+.terms-checkbox input { margin-top: 4px; }
+.terms-checkbox label { font-size: 13px; color: var(--on-surface-variant); line-height: 1.4; }
+.terms-checkbox span { color: var(--primary); font-weight: 600; cursor: pointer; }
+
+.auth-footer-text, .auth-footer-divider {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 14px;
+  color: var(--on-surface-variant);
+}
+
+.auth-footer-text a, .auth-footer-divider a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}

@@ -1,0 +1,20 @@
+.app-shell {
+  --header-bg: white;
+  --header-text: #2B2B2B;
+  --nav-text: #5F665D;
+  --input-bg: #F3EFE7;
+  --icon-color: #4F6F52;
+  --body-bg: #F8F5F0; 
+  background-color: var(--body-bg);
+  transition: background-color 0.3s ease;
+}
+
+.dark-mode {
+  --header-bg: #1a1a1a;
+  --header-text: #ffffff;
+  --nav-text: #bbbbbb;
+  --input-bg: #333333;
+  --icon-color: #ffffff;
+  --body-bg: #1a1a1a; 
+}
+

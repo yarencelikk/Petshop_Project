@@ -1,0 +1,19 @@
+:root {
+  --primary: #4F6F52;
+  --primary-container: #739072;
+  --secondary: #739072;
+  --accent: #674188;
+  --bg-surface: #F8F5F0;
+  --surface: #FFFFFF;
+  --on-surface: #2B2B2B;
+  --on-surface-variant: #5F665D;
+  --header-bg: rgba(255, 255, 255, 0.8);
+  --shadow: 0px 8px 30px rgba(79, 111, 82, 0.12);
+}
+
+body {
+  margin: 0;
+  padding:0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg-surface);
+}

@@ -1,0 +1,366 @@
+/* Cart.css */
+
+.cart-page {
+    background-color: #F8F5F0;
+    min-height: 100vh;
+}
+
+.cart-page-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 30px 24px;
+}
+
+.cart-glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(79, 111, 82, 0.10);
+}
+
+/* Breadcrumbs */
+.cart-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5F665D;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.cart-breadcrumbs .active {
+    color: #4F6F52;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2B2B2B;
+    margin-bottom: 32px;
+}
+
+/* Grid Layout */
+.cart-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    align-items: start;
+}
+
+/* Ürün Kartları */
+.cart-items-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.cart-item {
+    display: flex;
+    padding: 24px;
+    gap: 24px;
+    align-items: center;
+}
+
+.item-image-wrapper {
+    width: 128px;
+    height: 128px;
+    background: #F3EFE7;
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.item-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-cover: cover;
+}
+
+.item-details {
+    flex: 1;
+}
+
+.brand-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #5F665D;
+    text-transform: uppercase;
+}
+
+.item-details h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2B2B2B;
+    margin: 4px 0;
+}
+
+.specs-text {
+    color: #5F665D;
+    font-size: 14px;
+}
+
+.item-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #5F665D;
+    text-decoration: none !important;
+}
+
+.action-btn.delete { color: #8b2727; }
+.action-btn:hover {
+    text-decoration: none;
+    opacity: 0.8;
+}
+
+/* Fiyat ve Adet */
+.item-price-qty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.price-tag {
+    font-size: 24px;
+    font-weight: 700;
+    color: #4F6F52;
+}
+
+.qty-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #F8F5F0;
+    border: 1px solid #D9D1C3;
+    padding: 4px 12px;
+    border-radius: 100px;
+}
+
+.qty-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    color: #4F6F52;
+}
+
+.qty-val { font-weight: 700; font-size: 18px; min-width: 20px; text-align: center; }
+
+/* Kargo Banner */
+.shipping-info-banner {
+    background: #EFE8DC;
+    color: #4F6F52;
+    padding: 20px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+}
+
+.shipping-icon { font-size: 24px; }
+
+/* Özet Alanı */
+.summary-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 100px;
+}
+
+.summary-card h2 {
+    font-size: 20px;
+    border-bottom: 1px solid #D9D1C3;
+    padding-bottom: 16px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    color: #5F665D;
+}
+
+.summary-row.free strong { color: #739072; }
+.summary-row.discount strong { color: #8b2727; }
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #D9D1C3;
+    padding-top: 16px;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.final-price { font-size: 28px; color: #4F6F52; }
+
+.coupon-area {
+    position: relative;
+    margin-top: 8px;
+}
+
+.coupon-area input {
+    width: 95%;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #D9D1C3;
+    outline: none;
+}
+
+.coupon-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #4F6F52;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.coupon-message {
+    margin: -6px 0 0;
+    color: #5F665D;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.payment-methods-box,
+.card-payment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid #D9D1C3;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.payment-methods-title {
+    color: #2B2B2B;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.payment-method-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #5F665D;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.payment-method-option input {
+    accent-color: #4F6F52;
+}
+
+.card-payment-form input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #D9D1C3;
+    border-radius: 12px;
+    outline: none;
+}
+
+.card-payment-form input:focus {
+    border-color: #4F6F52;
+}
+
+.card-payment-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.payment-message {
+    margin: -6px 0 0;
+    color: #5F665D;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.checkout-btn {
+    background: white;
+    color: #4F6F52;
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(79, 111, 82, 0.24);
+    transition: all 0.2s;
+}
+
+.checkout-btn:hover { transform: scale(1.02); background: #F3EFE7; }
+
+.checkout-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+
+/* Alt Bar */
+.features-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+    margin-bottom: 80px;
+}
+
+.cart-feature-item {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.f-icon {
+    width: 48px;
+    height: 48px;
+    background: #EFE8DC;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4F6F52;
+    font-size: 24px;
+}
+
+.cart-feature-item h4 { margin: 0; font-size: 16px; }
+.cart-feature-item p { margin: 4px 0 0; font-size: 12px; color: #5F665D; }
+
+@media (max-width: 992px) {
+    .cart-grid { grid-template-columns: 1fr; }
+    .features-bar { grid-template-columns: 1fr; }
+}
