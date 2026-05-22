@@ -34,6 +34,7 @@ import {
   getMyProfile,
 } from "../api/authApi";
 import { sendAdminEmail } from "../api/emailApi";
+import SupportAgentPanel from "./SupportAgentPanel";
 
 const currencyFormatter = new Intl.NumberFormat("tr-TR", {
   style: "currency",
@@ -896,7 +897,7 @@ export default function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    navigate("/admin/login", { replace: true });
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -951,6 +952,10 @@ export default function Dashboard() {
               admin_panel_settings
             </span>
             <span>Adminler</span>
+          </a>
+          <a className="nav-item" href="#canli-destek">
+            <span className="material-symbols-outlined">support_agent</span>
+            <span>Canli Destek</span>
           </a>
           <a className="nav-item" href="#email">
             <span className="material-symbols-outlined">mail</span>
@@ -1989,6 +1994,21 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
+          </section>
+
+          <section
+            className="table-card natural-bloom-shadow"
+            id="canli-destek"
+          >
+            <div className="table-header">
+              <div>
+                <h4 className="chart-title">Canli Destek</h4>
+                <p className="chart-subtitle">
+                  Bekleyen sohbetleri kabul et, müşteriye cevap yaz ve görüşmeyi bitir
+                </p>
+              </div>
+            </div>
+            <SupportAgentPanel profile={profile} />
           </section>
 
           <section className="table-card natural-bloom-shadow" id="email">

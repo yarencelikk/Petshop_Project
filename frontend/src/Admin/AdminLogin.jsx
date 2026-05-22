@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { loginUser } from "../api/authApi";
 import "./AdminLogin.css";
+
+const siteUrl = import.meta.env.VITE_SITE_URL || "http://127.0.0.1:5173";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -39,7 +41,7 @@ const AdminLogin = () => {
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(user));
-      navigate("/admin");
+      navigate("/");
     } catch (error) {
       setMessage(error.response?.data?.message || "Admin girisi yapilamadi.");
     } finally {
@@ -126,8 +128,8 @@ const AdminLogin = () => {
           </form>
 
           <div className="admin-login-footer">
-            <Link to="/">Magazaya don</Link>
-            <Link to="/login">Musteri girisi</Link>
+            <a href={siteUrl}>Magazaya don</a>
+            <a href={`${siteUrl}/login`}>Musteri girisi</a>
           </div>
         </div>
       </section>

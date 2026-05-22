@@ -8,6 +8,7 @@ import {
 import { useEffect } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ChatWidget from "./components/ChatWidget";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -18,39 +19,14 @@ import Profile from "./pages/Profile";
 import CartPage from "./pages/Cart";
 import PetBlog from "./pages/PetBlog";
 import Contact from "./pages/Contact";
-import Dashboard from "./Admin/Dashboard";
-import AdminLogin from "./Admin/AdminLogin";
 import { DeliveryInfo, HelpCenter, ReturnPolicy } from "./pages/SupportPages";
-
-const getStoredUser = () => {
-  try {
-    return JSON.parse(localStorage.getItem("user") || "null");
-  } catch {
-    return null;
-  }
-};
-
-const AdminProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  const user = getStoredUser();
-
-  if (!token || user?.role !== "admin") {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    return <Navigate to="/admin/login" replace />;
-  }
-
-  return children;
-};
 
 // Header ve Footer'ın görünüp görünmeyeceğine karar veren yardımcı bileşen
 const AppContent = () => {
   const location = useLocation();
 
   // Login ve Register sayfalarında Header/Footer gizlensin
-  const noHeaderFooter = ["/login", "/register", "/admin", "/admin/login"].includes(
-    location.pathname,
-  );
+  const noHeaderFooter = ["/login", "/register"].includes(location.pathname);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -89,19 +65,12 @@ const AppContent = () => {
           <Route path="/profil" element={<Profile />} />
           <Route path="/adres" element={<Profile initialView="addresses" />} />
 
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route
-            path="/admin"
-            element={
-              <AdminProtectedRoute>
-                <Dashboard />
-              </AdminProtectedRoute>
-            }
-          />
+          <Route path="/admin/*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 
       {!noHeaderFooter && <Footer />}
+      {!noHeaderFooter && <ChatWidget />}
     </>
   );
 };

@@ -1509,6 +1509,271 @@ body {
   height: 80px;
 }
 
+.support-agent-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.38fr) minmax(0, 1fr);
+  height: min(720px, calc(100vh - 180px));
+  min-height: 520px;
+  border-top: 1px solid var(--outline-variant);
+  overflow: hidden;
+}
+
+.support-agent-sidebar {
+  border-right: 1px solid var(--outline-variant);
+  background-color: var(--surface-container-lowest);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.support-agent-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  border-bottom: 1px solid var(--outline-variant);
+}
+
+.support-agent-status > .material-symbols-outlined {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-fixed);
+  color: var(--primary);
+}
+
+.support-agent-status strong,
+.support-session-item span,
+.support-chat-header strong {
+  display: block;
+  color: var(--on-surface);
+  font-weight: 800;
+}
+
+.support-agent-status small,
+.support-session-item small,
+.support-chat-header small {
+  display: block;
+  color: var(--outline);
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.support-session-list {
+  border-bottom: 1px solid var(--surface-container);
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.support-session-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background-color: var(--surface-container-low);
+  color: var(--on-surface);
+}
+
+.support-session-list__header span {
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary-container);
+  color: var(--on-secondary-container);
+  font-weight: 800;
+}
+
+.support-session-item {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--surface-container);
+  background-color: transparent;
+  cursor: pointer;
+  padding: 14px 18px;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.support-session-item:hover,
+.support-session-item.active {
+  background-color: var(--secondary-container);
+}
+
+.support-empty-list {
+  padding: 16px 18px;
+  color: var(--outline);
+  font-weight: 700;
+}
+
+.support-chat-area {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface-container-low);
+  overflow: hidden;
+}
+
+.support-chat-header {
+  min-height: 74px;
+  padding: 16px 18px;
+  background-color: var(--surface-container-lowest);
+  border-bottom: 1px solid var(--outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.support-close-btn {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  background-color: var(--surface-container-lowest);
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.support-close-btn:hover:not(:disabled) {
+  background-color: var(--error-container);
+  border-color: transparent;
+  color: var(--on-error-container);
+}
+
+.support-close-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.support-panel-error {
+  padding: 12px 18px;
+  background-color: var(--error-container);
+  color: var(--on-error-container);
+  font-weight: 800;
+}
+
+.support-message-list {
+  flex: 1;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.support-message {
+  max-width: min(620px, 82%);
+  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  line-height: 1.45;
+}
+
+.support-message span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.72;
+}
+
+.support-message p {
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.support-message--customer {
+  align-self: flex-start;
+  background-color: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  color: var(--on-surface);
+}
+
+.support-message--agent {
+  align-self: flex-end;
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.support-message--ai,
+.support-message--system {
+  align-self: center;
+  background-color: var(--surface-container-high);
+  color: var(--on-surface-variant);
+  font-size: 13px;
+}
+
+.support-empty-chat {
+  margin: auto;
+  max-width: 320px;
+  color: var(--outline);
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.support-composer {
+  padding: 12px;
+  border-top: 1px solid var(--outline-variant);
+  background-color: var(--surface-container-lowest);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.support-composer input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-container-low);
+  color: var(--on-surface);
+  padding: 12px 14px;
+  font: inherit;
+  outline: none;
+}
+
+.support-composer input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(51, 79, 43, 0.12);
+}
+
+.support-composer button {
+  width: 46px;
+  min-height: 46px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background-color: var(--primary);
+  color: var(--on-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.support-composer button:disabled,
+.support-composer input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 /* Responsive Uyumluluk Ekranları */
 @media (max-width: 1024px) {
   .bento-grid {
@@ -1520,7 +1785,8 @@ body {
   .quick-create-grid,
   .admin-form-grid,
   .admin-management-layout,
-  .admin-email-layout {
+  .admin-email-layout,
+  .support-agent-panel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1543,8 +1809,13 @@ body {
   .admin-management-layout,
   .admin-user-form,
   .admin-email-layout,
+  .support-agent-panel,
   .split-tables {
     grid-template-columns: 1fr;
+  }
+  .support-agent-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--outline-variant);
   }
   .admin-form-grid .wide-field {
     grid-column: span 1;
