@@ -33,5 +33,3 @@ logs/
 public/uploads/*
 !public/uploads/.gitkeep
 
-# Sequelize / DB Geçici Dosyaları
-.sequelizerc
